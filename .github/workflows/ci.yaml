@@ -1,0 +1,11 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: 
+      - master
+  pull:
+    branches:
+      - master
+
+jobs:
