@@ -25,7 +25,9 @@ jobs:
           cd ${{ github.workspace }}/angular
           npm ci
 
-      - name: Run tests
+      - name: Run headless test
+        uses: coactions/setup-xvfb@v1
+        with:
         run: |
           cd ${{ github.workspace }}/angular
           npm test
