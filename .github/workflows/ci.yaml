@@ -9,3 +9,32 @@ on:
       - master
 
 jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code from the repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+      
+      - name: Clean Install dependencies 
+        run: |
+          cd ${{ github.workspace }}/angular
+          npm ci
+
+      - name: Run tests
+        run: |
+          cd ${{ github.workspace }}/angular
+          npm test
+        continue-on-error: False
+
+      - name: Build Angular project
+        run: |
+          cd ${{ github.workspace }}/angular
+          npm run build
+
+      - name: Build Docker 
+        run: 
