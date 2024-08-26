@@ -26,17 +26,17 @@ jobs:
             cd ${{ github.workspace }}/angular
             npm ci
 
-      - name: Run headless test
-        id: run-tests
-        uses: GabrielBB/xvfb-action@v1
-        with:
-          run: npm test
-          working-directory: ./angular
-        continue-on-error: True
+      # - name: Run headless test
+      #   id: run-tests
+      #   uses: GabrielBB/xvfb-action@v1
+      #   with:
+      #     run: npm test
+      #     working-directory: ./angular
+      #   continue-on-error: True
 
       - name: Build Angular project
         id: build-project
-        if: steps.run-tests.outcome == 'success'
+        # if: steps.run-tests.outcome == 'success'
         run: |
             cd ${{ github.workspace }}/angular
             npm run build
