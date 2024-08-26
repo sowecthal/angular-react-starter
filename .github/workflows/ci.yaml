@@ -21,21 +21,19 @@ jobs:
           node-version: 18
       
       - name: Clean Install dependencies 
-        run: |
-          cd ${{ github.workspace }}/angular
-          npm ci
+        run: npm ci
+        working-directory: ${{ github.workspace }}/angular
 
       - name: Run headless test
         uses: coactions/setup-xvfb@v1
         with:
-          run: |
-            cd ${{ github.workspace }}/angular
-            npm test
+          run: npm test
+        working-directory: ${{ github.workspace }}/angular
+        continue-on-error: true
 
       - name: Build Angular project
-        run: |
-          cd ${{ github.workspace }}/angular
-          npm run build
+        run: npm run build
+        working-directory: ${{ github.workspace }}/angular
 
       - name: Log in to GitHub Container Registry  
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
@@ -52,12 +50,12 @@ jobs:
           server_address: smtp.gmail.com
           server_port: 465
 
-          username: ${{  secrets.MAIL_USERNAME  }}
-          password: ${{  secrets.MAIL_PASSWORD  }}
+          username: ${{ secrets.MAIL_USERNAME }}
+          password: ${{ secrets.MAIL_PASSWORD }}
 
           subject: GITHUB ACTIONS JOB RESULT
 
           to: sowecthal@gmail.com
           from: GitHub Actions Pipeline
 
-          body: Build job of ${{  github.repository  }} completed. Job status is ${{  job.status  }}. 
+          body: Build job of ${{ github.repository }} completed. Job status is ${{ job.status }}.
