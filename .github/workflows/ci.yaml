@@ -36,8 +36,27 @@ jobs:
           cd ${{ github.workspace }}/angular
           npm run build
 
-      - name: Build Docker image
-        run: docker build . -t angular-react-starter-image
-
       - name: Log in to GitHub Container Registry  
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Build Docker image
+        run: docker build -t angular-react-starter-image .
+
+      - name: Push Docker image
+        run: docker push ghcr.io/${{ github.repository }}/angular-react-starter-image:latest
+
+      - name: Send email 
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+
+          username: ${{  secrets.MAIL_USERNAME  }}
+          password: ${{  secrets.MAIL_PASSWORD  }}
+
+          subject: GITHUB ACTIONS JOB RESULT
+
+          to: sowecthal@gmail.com
+          from: GitHub Actions Pipeline
+
+          body: Build job of ${{  github.repository  }} completed. Job status is ${{  job.status  }}. 
