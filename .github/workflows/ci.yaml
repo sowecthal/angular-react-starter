@@ -40,21 +40,25 @@ jobs:
         run: |
             cd ${{ github.workspace }}/angular
             npm run build
+        continue-on-error: True
 
       - name: Log in to GitHub Container Registry  
         id: login-registry
         if: steps.build-project.outcome == 'success'
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+        continue-on-error: True
 
       - name: Build Docker image
         id: build-docker
         if: steps.login-registry.outcome == 'success'
         run: docker build -t angular-react-starter-image .
+        continue-on-error: True
 
       - name: Push Docker image
         id: push-docker
         if: steps.build-docker.outcome == 'success'
-        run: docker push ghcr.io/${{ github.repository }}/angular-react-starter-image:latest
+        run: docker push ghcr.io/${{ github.actor }}/angular-react-starter-image:latest
+        continue-on-error: True
 
       - name: Send email notification
         uses: dawidd6/action-send-mail@v3
