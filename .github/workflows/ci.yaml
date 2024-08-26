@@ -28,7 +28,7 @@ jobs:
 
       - name: Run headless test
         id: run-tests
-        uses: coactions/setup-xvfb@v1
+        uses: GabrielBB/xvfb-action@v1
         with:
           run: npm test
           working-directory: ./angular
