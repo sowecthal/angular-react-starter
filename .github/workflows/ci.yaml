@@ -30,10 +30,9 @@ jobs:
         id: run-tests
         uses: coactions/setup-xvfb@v1
         with:
-          run: |
-            cd ${{ github.workspace }}/angular
-            xvfb-run --auto-servernum npm test
-        continue-on-error: true
+          run: npm test
+          working-directory: ./angular
+        continue-on-error: True
 
       - name: Build Angular project
         id: build-project
