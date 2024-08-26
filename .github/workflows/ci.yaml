@@ -1,0 +1,126 @@
+name: CI Pipeline
+
+on:
+  workflow_dispatch:
+    inputs:
+      node_version:
+        description: Node.js version
+        required: true
+        default: 18
+        type: string
+      docker_registry:
+        description: Docker registry
+        required: true
+        default: ghcr.io
+        type: string
+      docker_repo:
+        description: Docker repository name
+        required: true
+        default: angular-react-starter-image
+        type: string
+      docker_tag:
+        description: Docker tag
+        required: true
+        default: latest
+        type: string
+      mail_server_address:
+        description: Mail server address
+        required: true
+        default: smtp.gmail.com
+        type: string
+      mail_server_port:
+        description: Mail server port
+        required: true
+        default: 465
+        type: number
+      mail_receiver: 
+        description: Email of the receiver
+        required: false
+        type: string
+      mail_subject:
+        description: Subject of the email
+        required: true
+        default: Github actions job result
+        type: string
+    secrets:
+      mail_username:
+        description: Username for the email notification step
+        required: true
+      mail_password:
+        description: Password for the email notification step
+        required: true
+      github_token:
+        description: Github token for accessing the github container registry
+        required: true
+
+env:
+  IMAGE_NAME: '${{ inputs.docker_registry }}/${{ github.actor }}/${{ inputs.docker_repo }}:${{ inputs.docker_tag }}'
+  DEFAULT_MAIL_RECEIVER: '${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./angular
+    steps:
+      - name: Checkout code from the repository
+        uses: actions/checkout@v4
+
+      - name: Set up node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node_version }}
+
+      - name: Install clean dependencies
+        run: npm ci
+
+      - name: Run headless tests
+        id: run-tests
+        run: npm run test -- --watch=false --browsers=ChromeHeadless 
+
+      - name: Build angular project
+        id: build-project
+        run: npm run build
+
+      - name: Log in to github container registry  
+        id: login-registry
+        run: | 
+          echo "${{ secrets.github_token }}" \
+          | docker login ${{ inputs.docker_registry }} -u ${{ github.actor }} --password-stdin
+
+      - name: Build docker image
+        id: build-docker
+        run: docker build -t $IMAGE_NAME .
+        working-directory: .
+
+      - name: Push docker image
+        id: push-docker
+        run: docker push $IMAGE_NAME
+
+      - name: Get pipeline execution time
+        id: get-time
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: echo "execution_time=$(gh run list --json createdAt,updatedAt -w ci.yaml -L 1 | jq -r '.[0] | (( (strtotime(.updatedAt) - strtotime(.createdAt)) ))')s" >> $GITHUB_ENV
+
+      - name: Send email notification
+        if: always()
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: ${{ inputs.mail_server_address }}
+          server_port: ${{ inputs.mail_server_port }}
+          username: ${{ secrets.mail_username }}
+          password: ${{ secrets.mail_password }}
+          subject: ${{ inputs.mail_subject  }}
+          to: ${{ inputs.mail_receiver != '' && inputs.mail_receiver || env.DEFAULT_MAIL_RECEIVER }} 
+          from: GitHub Actions Pipeline
+          body: |
+            Build job of ${{ github.repository }} completed.
+            Job status is ${{ job.status }}. Execution time: ${{ env.execution_time }}.
+            - Run tests: ${{ steps.run-tests.outcome }}
+            - Build project: ${{ steps.build-project.outcome }}
+            - Login to Docker Registry: ${{ steps.login-registry.outcome }}
+            - Build Docker image: ${{ steps.build-docker.outcome }}
+            - Push Docker image: ${{ steps.push-docker.outcome }}
