@@ -2,7 +2,7 @@ name: CI Pipeline
 
 on:
   push:
-    branches: 
+    branches:
       - master
   pull_request:
     branches:
@@ -19,45 +19,64 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 18
-      
+
       - name: Clean Install dependencies 
+        id: install-deps
         run: |
-          cd ${{ github.workspace }}/angular
-          npm ci
+            cd ${{ github.workspace }}/angular
+            npm ci
 
       - name: Run headless test
+        id: run-tests
         uses: coactions/setup-xvfb@v1
         with:
-          run: npm test
-          working-directory: ./angular
-        continue-on-error: True
+          run: |
+            cd ${{ github.workspace }}/angular
+            xvfb-run --auto-servernum npm test
+        continue-on-error: true
 
       - name: Build Angular project
+        id: build-project
+        if: steps.run-tests.outcome == 'success'
         run: |
-          cd ${{ github.workspace }}/angular
-          npm run build
+            cd ${{ github.workspace }}/angular
+            npm run build
 
       - name: Log in to GitHub Container Registry  
+        id: login-registry
+        if: steps.build-project.outcome == 'success'
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
       - name: Build Docker image
+        id: build-docker
+        if: steps.login-registry.outcome == 'success'
         run: docker build -t angular-react-starter-image .
 
       - name: Push Docker image
+        id: push-docker
+        if: steps.build-docker.outcome == 'success'
         run: docker push ghcr.io/${{ github.repository }}/angular-react-starter-image:latest
 
-      - name: Send email 
+      - name: Send email notification
         uses: dawidd6/action-send-mail@v3
         with:
           server_address: smtp.gmail.com
           server_port: 465
 
-          username: ${{  secrets.MAIL_USERNAME  }}
-          password: ${{  secrets.MAIL_PASSWORD  }}
+          username: ${{ secrets.MAIL_USERNAME }}
+          password: ${{ secrets.MAIL_PASSWORD }}
 
           subject: GITHUB ACTIONS JOB RESULT
 
           to: sowecthal@gmail.com
           from: GitHub Actions Pipeline
 
-          body: Build job of ${{  github.repository  }} completed. Job status is ${{  job.status  }}. 
+          body: |
+            Build job of ${{ github.repository }} completed.
+            Job status is ${{ job.status }}.
+            - Install dependencies: ${{ steps.install-deps.outcome }}
+            - Run tests: ${{ steps.run-tests.outcome }}
+            - Build project: ${{ steps.build-project.outcome }}
+            - Login to Docker Registry: ${{ steps.login-registry.outcome }}
+            - Build Docker image: ${{ steps.build-docker.outcome }}
+            - Push Docker image: ${{ steps.push-docker.outcome }}
