@@ -29,7 +29,6 @@ jobs:
         run: |
           cd ${{ github.workspace }}/angular
           npm test
-        continue-on-error: False
 
       - name: Build Angular project
         run: |
