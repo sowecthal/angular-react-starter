@@ -62,7 +62,7 @@ jobs:
 
   mail:
     runs-on: ubuntu-latest
-    needs: [build, test, build-angular, docker]
+    # needs: [build, test, build-angular, docker]
     if: always()
     steps:
       - name: Send email notification
