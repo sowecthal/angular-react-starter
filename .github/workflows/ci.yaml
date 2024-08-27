@@ -9,6 +9,7 @@ on:
       - master
 
 jobs:
+
   build:
     runs-on: ubuntu-latest
     steps:
@@ -20,68 +21,57 @@ jobs:
         with:
           node-version: 18
 
-      - name: Clean Install dependencies 
-        id: install-deps
+      - name: Clean Install dependencies
         run: |
-            cd ${{ github.workspace }}/angular
-            npm ci
+          cd angular-react-starter/angular
+          npm ci
+        continue-on-error: false
 
+  test:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
       - name: Set up Xvfb
         uses: coactions/setup-xvfb@v1
+        with:
+          run: npm test -- --watch=false --progress=false --browsers=ChromeHeadless
+          working-directory: angular-react-starter/angular
+        continue-on-error: false
 
-      - name: Run headless tests
-        id: run-tests
-        run: |
-          cd ${{ github.workspace }}/angular
-          npm test -- --watch=false --progress=false --browsers=ChromeHeadless
-        continue-on-error: true
-
-      - name: Build Angular project
-        id: build-project
-        if: steps.run-tests.outcome == 'success'
-        run: |
-            cd ${{ github.workspace }}/angular
-            npm run build
-        continue-on-error: true
-
-      - name: Log in to GitHub Container Registry  
-        id: login-registry
-        if: steps.build-project.outcome == 'success'
+  docker:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: Log in to GitHub Container Registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-        continue-on-error: true
+        continue-on-error: false
 
       - name: Build Docker image
-        id: build-docker
-        if: steps.login-registry.outcome == 'success'
         run: docker build -t ghcr.io/${{ github.actor }}/angular-react-starter-image .
-        continue-on-error: true
+        continue-on-error: false
 
       - name: Push Docker image
-        id: push-docker
-        if: steps.build-docker.outcome == 'success'
         run: docker push ghcr.io/${{ github.actor }}/angular-react-starter-image:latest
-        continue-on-error: true
+        continue-on-error: false
 
+  mail:
+    runs-on: ubuntu-latest
+    needs: [build, test, docker]
+    if: always()
+    steps:
       - name: Send email notification
         uses: dawidd6/action-send-mail@v3
         with:
           server_address: smtp.gmail.com
           server_port: 465
-
           username: ${{ secrets.MAIL_USERNAME }}
           password: ${{ secrets.MAIL_PASSWORD }}
-
           subject: GITHUB ACTIONS JOB RESULT
-
           to: sowecthal@gmail.com
           from: GitHub Actions Pipeline
-
           body: |
             Build job of ${{ github.repository }} completed.
             Job status is ${{ job.status }}.
-            - Install dependencies: ${{ steps.install-deps.outcome }}
-            - Run tests: ${{ steps.run-tests.outcome }}
-            - Build project: ${{ steps.build-project.outcome }}
-            - Login to Docker Registry: ${{ steps.login-registry.outcome }}
-            - Build Docker image: ${{ steps.build-docker.outcome }}
-            - Push Docker image: ${{ steps.push-docker.outcome }}
+            - Build: ${{ needs.build.result }}
+            - Tests: ${{ needs.test.result }}
+            - Docker build: ${{ needs.docker.result }}
