@@ -23,7 +23,7 @@ jobs:
 
       - name: Clean Install dependencies
         run: |
-          cd angular-react-starter/angular
+          cd ${{ github.workspace }}/angular
           npm ci
         continue-on-error: false
 
@@ -34,13 +34,24 @@ jobs:
       - name: Set up Xvfb
         uses: coactions/setup-xvfb@v1
         with:
-          run: npm test -- --watch=false --progress=false --browsers=ChromeHeadless
-          working-directory: angular-react-starter/angular
+          run: |
+          cd ${{ github.workspace }}/angular
+          npm test -- --watch=false --progress=false --browsers=ChromeHeadless
+        continue-on-error: false
+
+  build-angular:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: Build Angular project
+        run: |
+          cd ${{ github.workspace }}/angular
+          npm run build
         continue-on-error: false
 
   docker:
     runs-on: ubuntu-latest
-    needs: test
+    needs: build-angular
     steps:
       - name: Log in to GitHub Container Registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
@@ -56,7 +67,7 @@ jobs:
 
   mail:
     runs-on: ubuntu-latest
-    needs: [build, test, docker]
+    needs: [build, test, build-angular, docker]
     if: always()
     steps:
       - name: Send email notification
@@ -71,7 +82,7 @@ jobs:
           from: GitHub Actions Pipeline
           body: |
             Build job of ${{ github.repository }} completed.
-            Job status is ${{ job.status }}.
+            **Job status is ${{ needs.build.result == 'failure' || needs.test.result == 'failure' || needs.build-angular.result == 'failure' || needs.docker.result == 'failure' ? 'failure' : 'success' }}.**
             - Build: ${{ needs.build.result }}
             - Tests: ${{ needs.test.result }}
             - Docker build: ${{ needs.docker.result }}
