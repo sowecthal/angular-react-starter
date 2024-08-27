@@ -82,7 +82,7 @@ jobs:
           from: GitHub Actions Pipeline
           body: |
             Build job of ${{ github.repository }} completed.
-            **Job status is ${{ needs.build.result == 'failure' || needs.test.result == 'failure' || needs.build-angular.result == 'failure' || needs.docker.result == 'failure' ? 'failure' : 'success' }}.**
+            **Job status is ${{ needs.build.result || needs.test.result || needs.build-angular.result || needs.docker.result && 'failure' || 'success' }}.**
             - Build: ${{ needs.build.result }}
             - Tests: ${{ needs.test.result }}
             - Docker build: ${{ needs.docker.result }}
