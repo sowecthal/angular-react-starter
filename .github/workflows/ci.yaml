@@ -60,7 +60,7 @@ jobs:
         id: get-time
         env:
           GH_TOKEN: ${{ github.token }}
-        run: echo $( gh run list --workflow ci.yaml --limit 1 | awk 'print $5')
+        run: echo $( gh run list --workflow ci.yaml --limit 1 | awk '{print $5}')
 
       - name: Send email notification
         uses: dawidd6/action-send-mail@v3
