@@ -26,28 +26,16 @@ jobs:
         run: npm ci
         continue-on-error: false
 
-  # test:
-  #   runs-on: ubuntu-latest
-  #   needs: build
-  #   steps:
-  #     - name: Run headless tests
-  #       run: npm test -- --browsers=ChromeHeadless --watch=false
-  #       working-directory: ./angular
-  #       continue-on-error: false
+      - name: Run headless tests
+        run: npm test -- --browsers=ChromeHeadless --watch=false
+        working-directory: ./angular
+        continue-on-error: false
 
-  build-angular:
-    runs-on: ubuntu-latest
-    # needs: test
-    steps:
       - name: Build Angular project
         working-directory: ./angular
         run: npm run build
         continue-on-error: false
 
-  docker:
-    runs-on: ubuntu-latest
-    needs: build-angular
-    steps:
       - name: Log in to GitHub Container Registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
         continue-on-error: false
@@ -60,11 +48,6 @@ jobs:
         run: docker push ghcr.io/${{ github.actor }}/angular-react-starter-image:latest
         continue-on-error: false
 
-  mail:
-    runs-on: ubuntu-latest
-    # needs: [build, test, build-angular, docker]
-    if: always()
-    steps:
       - name: Send email notification
         uses: dawidd6/action-send-mail@v3
         with:
@@ -77,8 +60,4 @@ jobs:
           from: GitHub Actions Pipeline
           body: |
             Build job of ${{ github.repository }} completed.
-            Job status is:
-            - Build job: ${{ needs.build.result }}
-            - Tests job: ${{ needs.test.result }}
-            - Build Angular job: ${{ needs.build-angular.result }}
-            - Docker build job: ${{ needs.docker.result }}
+            Job status is ${{ job.status }}
