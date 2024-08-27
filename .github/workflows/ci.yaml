@@ -58,7 +58,7 @@ jobs:
 
       - name: Get pipeline execution time
         id: get-time
-        run: echo $( gh run list --json attempt, conclusion, createdAt, databaseId, displayTitle, event, headBranch, headSha, name, number, startedAt, status, updatedAt, url, workflowDatabaseId, workflowName -w ci.yaml )
+        run: echo $( gh run list --json startedAt, createdAt --workflow ci.yaml --limit 1 )
 
       - name: Send email notification
         uses: dawidd6/action-send-mail@v3
