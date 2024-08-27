@@ -35,8 +35,8 @@ jobs:
         uses: coactions/setup-xvfb@v1
         with:
           run: |
-          cd ${{ github.workspace }}/angular
-          npm test -- --watch=false --progress=false --browsers=ChromeHeadless
+            cd ${{ github.workspace }}/angular
+            npm test -- --watch=false --progress=false --browsers=ChromeHeadless
         continue-on-error: false
 
   build-angular:
