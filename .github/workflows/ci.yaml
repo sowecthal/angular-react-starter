@@ -58,9 +58,7 @@ jobs:
 
       - name: Get pipeline execution time
         id: get-time
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: echo $( gh run list --workflow ci.yaml )
+        run: echo $( gh run list --json attempt, conclusion, createdAt, databaseId, displayTitle, event, headBranch, headSha, name, number, startedAt, status, updatedAt, url, workflowDatabaseId, workflowName -w ci.yaml )
 
       - name: Send email notification
         uses: dawidd6/action-send-mail@v3
@@ -77,8 +75,8 @@ jobs:
           from: GitHub Actions Pipeline
 
           body: |
-            Build job of ${{ github.repository }} completed.
-            Job status is ${{ job.status }}.
+            Build job of ${{ github.repository }} completed. 
+            Job status is ${{ job.status }}. 
             - Install dependencies: ${{ steps.install-deps.outcome }}
             - Run tests: ${{ steps.run-tests.outcome }}
             - Build project: ${{ steps.build-project.outcome }}
