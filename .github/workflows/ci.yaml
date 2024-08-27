@@ -22,22 +22,20 @@ jobs:
           node-version: 18
 
       - name: Install Clean dependencies
-        id: install-depds 
         working-directory: ./angular
         run: npm ci
 
       - name: Run headless tests
         id: run-tests
-        run: npm test -- --browsers=ChromeHeadless --watch=false
+        run: npm test -- --watch=false --browsers=ChromeHeadless 
         working-directory: ./angular
         continue-on-error: true
 
       - name: Build Angular project
         id: build-project
         if: steps.run-tests.outcome == 'success'
-        run: |
-            cd ${{ github.workspace }}/angular
-            npm run build
+        run: npm run build
+        working-directory: ./angular
         continue-on-error: true
 
       - name: Log in to GitHub Container Registry  
@@ -57,6 +55,12 @@ jobs:
         if: steps.build-docker.outcome == 'success'
         run: docker push ghcr.io/${{ github.actor }}/angular-react-starter-image:latest
         continue-on-error: true
+
+      - name: Get pipeline execution time
+        id: get-time
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: echo $( gh run list --workflow ci.yaml )
 
       - name: Send email notification
         uses: dawidd6/action-send-mail@v3
