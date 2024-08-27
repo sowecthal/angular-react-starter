@@ -23,44 +23,44 @@ jobs:
       - name: Clean Install dependencies 
         id: install-deps
         run: |
-            cd ${{ github.workspace }}/angular
+            cd ${{ github.workspace }}/angular-react-starter/angular
             npm ci
 
-      - name: Run headless test
-        id: run-tests
-        uses: GabrielBB/xvfb-action@v1
-        with:
-          run: |
-            cd ${{ github.workspace }}/angular
-            npm test -- --watch=false --progress=false --browsers=ChromeHeadless
-        continue-on-error: true
+      - name: Set up Xvfb
+        uses: coactions/setup-xvfb@v1
 
+      - name: Run headless tests
+        id: run-tests
+        run: |
+          cd ${{ github.workspace }}/angular-react-starter/angular
+          npm test -- --watch=false --progress=false --browsers=ChromeHeadless
+        continue-on-error: true
 
       - name: Build Angular project
         id: build-project
         if: steps.run-tests.outcome == 'success'
         run: |
-            cd ${{ github.workspace }}/angular
+            cd ${{ github.workspace }}/angular-react-starter/angular
             npm run build
-        continue-on-error: True
+        continue-on-error: true
 
       - name: Log in to GitHub Container Registry  
         id: login-registry
         if: steps.build-project.outcome == 'success'
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-        continue-on-error: True
+        continue-on-error: true
 
       - name: Build Docker image
         id: build-docker
         if: steps.login-registry.outcome == 'success'
         run: docker build -t ghcr.io/${{ github.actor }}/angular-react-starter-image .
-        continue-on-error: True
+        continue-on-error: true
 
       - name: Push Docker image
         id: push-docker
         if: steps.build-docker.outcome == 'success'
         run: docker push ghcr.io/${{ github.actor }}/angular-react-starter-image:latest
-        continue-on-error: True
+        continue-on-error: true
 
       - name: Send email notification
         uses: dawidd6/action-send-mail@v3
