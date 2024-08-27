@@ -21,9 +21,9 @@ jobs:
         with:
           node-version: 18
 
-      - name: Install dependencies
-        working-directory: ${{ github.workspace }}/angular
-        run: npm install
+      - name: Install Clean dependencies
+        working-directory: ./angular
+        run: npm ci
         continue-on-error: false
 
   test:
@@ -32,7 +32,7 @@ jobs:
     steps:
       - name: Run headless tests
         run: npm test -- --browsers=ChromeHeadless --watch=false
-        working-directory: ${{ github.workspace }}/angular
+        working-directory: ./angular
         continue-on-error: false
 
   build-angular:
@@ -40,7 +40,7 @@ jobs:
     needs: test
     steps:
       - name: Build Angular project
-        working-directory: ${{ github.workspace }}/angular
+        working-directory: ./angular
         run: npm run build
         continue-on-error: false
 
