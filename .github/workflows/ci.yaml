@@ -21,9 +21,9 @@ jobs:
         with:
           node-version: 18
 
-      - name: Clean Install dependencies
+      - name: Install dependencies
         working-directory: ${{ github.workspace }}/angular
-        run: npm ci
+        run: npm install
         continue-on-error: false
 
       - name: List directory contents
@@ -36,8 +36,8 @@ jobs:
       - name: Run headless tests
         uses: GabrielBB/xvfb-action@v1
         with:
-          run: npm test
           working-directory: ${{ github.workspace }}/angular
+          run: npm run test
         continue-on-error: false
 
   build-angular:
