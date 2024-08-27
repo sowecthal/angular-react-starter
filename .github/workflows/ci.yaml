@@ -30,14 +30,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     steps:
-      - name: Install xvfb and other dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y xvfb
-
       - name: Run headless tests
-        run: |
-          xvfb-run npm test
+        run: npm test -- --browsers=ChromeHeadless --watch=false
         working-directory: ${{ github.workspace }}/angular
         continue-on-error: false
 
