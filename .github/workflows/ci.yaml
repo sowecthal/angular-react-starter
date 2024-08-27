@@ -23,7 +23,7 @@ jobs:
       - name: Clean Install dependencies 
         id: install-deps
         run: |
-            cd ${{ github.workspace }}/angular-react-starter/angular
+            cd ${{ github.workspace }}/angular
             npm ci
 
       - name: Set up Xvfb
@@ -32,7 +32,7 @@ jobs:
       - name: Run headless tests
         id: run-tests
         run: |
-          cd ${{ github.workspace }}/angular-react-starter/angular
+          cd ${{ github.workspace }}/angular
           npm test -- --watch=false --progress=false --browsers=ChromeHeadless
         continue-on-error: true
 
@@ -40,7 +40,7 @@ jobs:
         id: build-project
         if: steps.run-tests.outcome == 'success'
         run: |
-            cd ${{ github.workspace }}/angular-react-starter/angular
+            cd ${{ github.workspace }}/angular
             npm run build
         continue-on-error: true
 
