@@ -60,7 +60,7 @@ jobs:
         id: get-time
         env:
           GH_TOKEN: ${{ github.token }}
-        run: echo $( gh run list --workflow ci.yaml --limit 1 | grep -E --only-matching '([0-9]{1,2}[hms]){1,3}')
+        run: echo "execution_time=$( gh run list --workflow ci.yaml --limit 1 | grep -E --only-matching '([0-9]{1,2}[hms]){1,3}' )" >> $GITHUB_ENV
 
       - name: Send email notification
         uses: dawidd6/action-send-mail@v3
@@ -77,8 +77,8 @@ jobs:
           from: GitHub Actions Pipeline
 
           body: |
-            Build job of ${{ github.repository }} completed. 
-            Job status is ${{ job.status }}. 
+            Build job of ${{ github.repository }} completed.
+            Job status is ${{ job.status }}. Execution time: ${{ env.execution_time }}.
             - Run tests: ${{ steps.run-tests.outcome }}
             - Build project: ${{ steps.build-project.outcome }}
             - Login to Docker Registry: ${{ steps.login-registry.outcome }}
