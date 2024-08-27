@@ -27,6 +27,10 @@ jobs:
           npm ci
         continue-on-error: false
 
+      - name: List directory contents
+        run: ls -al ${{ github.workspace }}
+
+
   test:
     runs-on: ubuntu-latest
     needs: build
@@ -36,7 +40,7 @@ jobs:
         with:
           run: |
             cd ${{ github.workspace }}/angular
-            npm test -- --watch=false --progress=false --browsers=ChromeHeadless
+            npm test
         continue-on-error: false
 
   build-angular:
@@ -82,7 +86,8 @@ jobs:
           from: GitHub Actions Pipeline
           body: |
             Build job of ${{ github.repository }} completed.
-            **Job status is ${{ needs.build.result || needs.test.result || needs.build-angular.result || needs.docker.result && 'failure' || 'success' }}.**
-            - Build: ${{ needs.build.result }}
-            - Tests: ${{ needs.test.result }}
-            - Docker build: ${{ needs.docker.result }}
+            Job status is:
+            - Build job: ${{ needs.build.result }}
+            - Tests job: ${{ needs.test.result }}
+            - Build Angular job: ${{ needs.build-angular.result }}
+            - Docker build job: ${{ needs.docker.result }}
