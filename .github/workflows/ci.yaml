@@ -60,7 +60,7 @@ jobs:
         id: get-time
         env:
           GH_TOKEN: ${{ github.token }}
-        run: echo $( gh run list --json startedAt,createdAt --workflow ci.yaml --limit 1 )
+        run: echo $( gh run list --json startedAt,createdAt,updatedAt --workflow ci.yaml --limit 1 )
 
       - name: Send email notification
         uses: dawidd6/action-send-mail@v3
@@ -79,7 +79,6 @@ jobs:
           body: |
             Build job of ${{ github.repository }} completed. 
             Job status is ${{ job.status }}. 
-            - Install dependencies: ${{ steps.install-deps.outcome }}
             - Run tests: ${{ steps.run-tests.outcome }}
             - Build project: ${{ steps.build-project.outcome }}
             - Login to Docker Registry: ${{ steps.login-registry.outcome }}
