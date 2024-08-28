@@ -3,10 +3,10 @@ name: CI Pipeline
 on:
   push:
     branches:
-      - [ master, review-branch ]
+      - review-branch
   pull_request:
     branches:
-      - [ master, review-branch ]
+      - review-branch
 
 jobs:
 
