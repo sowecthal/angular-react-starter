@@ -4,9 +4,11 @@ on:
   push:
     branches:
       - master
+      - review-branch
   pull_request:
     branches:
       - master
+      - review-branch
 
 jobs:
 
