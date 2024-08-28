@@ -73,7 +73,6 @@ jobs:
 
           subject: GITHUB ACTIONS JOB RESULT
 
-          # if the email is hidden (e.g. noreply.github.com), sending an email directly won't work
           to: ${{ github.event.pusher.email }}
           from: GitHub Actions Pipeline
 
