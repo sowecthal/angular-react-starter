@@ -73,7 +73,7 @@ jobs:
 
           subject: GITHUB ACTIONS JOB RESULT
 
-          to: sowecthal@gmail.com
+          to: ${{ github.event.pusher.email }}
           from: GitHub Actions Pipeline
 
           body: |
