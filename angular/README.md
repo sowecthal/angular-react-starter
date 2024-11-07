@@ -5,7 +5,7 @@
 
 ### Developpement
 * `npm run start`
-* in your browser [http://localhost:4200](http://localhost:4200) 
+* in your browser [http://localhost:4200](http://localhost:4200)
 
 ## Linter
 * `npm run lint`
@@ -19,7 +19,7 @@
 
 ### Production
 * `npm run serve`
-* in your browser [http://localhost:4000](http://localhost:4000) 
+* in your browser [http://localhost:4000](http://localhost:4000)
 
 
 ### Author

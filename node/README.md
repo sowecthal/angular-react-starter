@@ -12,9 +12,9 @@
 * docker run -it node-starter:1.0.0 /bin/bash
 
 
-* in your browser [http://localhost:5000](http://localhost:5000) 
+* in your browser [http://localhost:5000](http://localhost:5000)
 
 
 ### Swagger / Api Documentation
 
-* in your browser [http://localhost:5000/api-docs](http://localhost:5000/api-docs) 
+* in your browser [http://localhost:5000/api-docs](http://localhost:5000/api-docs)

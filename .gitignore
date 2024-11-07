@@ -1,0 +1,4 @@
+.git-crypt/
+.idea
+.vscode
+git-crypt-key

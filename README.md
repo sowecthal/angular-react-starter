@@ -40,7 +40,7 @@ Here is a working Angular live demo :  https://angular.ganatan.com
 <p align="center">
   <p align="center">
     <a href="https://angular.ganatan.com/">
-      <img src="https://media.giphy.com/media/9BuBBLc7keCgRojp92/giphy.gif" alt="Angular 16 Example 
+      <img src="https://media.giphy.com/media/9BuBBLc7keCgRojp92/giphy.gif" alt="Angular 16 Example
       Application"/>
     </a>
   </p>
@@ -59,7 +59,7 @@ git clone https://gitlab.com/ganatan/angular-react-starter.git
 
 # change directory
 cd angular-react-starter
-cd angular 
+cd angular
 
 # install the repo with npm
 npm install
@@ -68,7 +68,7 @@ npm install
 npm start
 
 ```
-in your browser go to [http://localhost:4200](http://localhost:4200) 
+in your browser go to [http://localhost:4200](http://localhost:4200)
 
 
 
@@ -95,7 +95,7 @@ npm start
 
 ```
 
-in your browser go to [http://localhost:3000](http://localhost:3000) 
+in your browser go to [http://localhost:3000](http://localhost:3000)
 
 
 # [Node Quick start](#node-quick-start)
@@ -121,7 +121,7 @@ npm start
 
 ```
 
-in your browser go to [http://localhost:5000](http://localhost:5000) 
+in your browser go to [http://localhost:5000](http://localhost:5000)
 
 
 # [Angular Tutorial](#angular-quick-start)
@@ -143,9 +143,9 @@ Here is a step by step Tutorial :  https://www.ganatan.com/tutorials/getting-sta
 
 ## Development
 * `npm run start`
-* in your browser go to [http://localhost:4200](http://localhost:4200) 
+* in your browser go to [http://localhost:4200](http://localhost:4200)
 
-## Production 
+## Production
 * `npm run build`
 
 ## Linter
@@ -166,9 +166,9 @@ Here is a step by step Tutorial :  https://www.ganatan.com/tutorials/getting-sta
 
 ## Development
 * `npm run start`
-* in your browser go to [http://localhost:3000](http://localhost:3000) 
+* in your browser go to [http://localhost:3000](http://localhost:3000)
 
-## Production 
+## Production
 * `npm run build`
 
 ## Linter
@@ -188,9 +188,9 @@ Here is a step by step Tutorial :  https://www.ganatan.com/tutorials/getting-sta
 
 ## Development
 * `npm run start`
-* in your browser go to [http://localhost:5000](http://localhost:5000) 
+* in your browser go to [http://localhost:5000](http://localhost:5000)
 
-## Production 
+## Production
 * `npm run build`
 
 ## Linter
@@ -217,4 +217,3 @@ Here is a step by step Tutorial :  https://www.ganatan.com/tutorials/getting-sta
 ## [Tutoriels React en français](#french-tutorials)
 - Installation - https://www.ganatan.com/tutorials/demarrer-avec-react
 - Tutoriels Etape par étape - https://www.ganatan.com/tutorials
-
