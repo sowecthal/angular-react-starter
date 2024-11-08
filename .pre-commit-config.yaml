@@ -20,7 +20,8 @@ repos:
     rev: v0.10.0.1
     hooks:
       - id: shellcheck
-        entry: shellcheck -x
+        args:
+          - -x
 
   - repo: https://github.com/lyz-code/yamlfix
     rev: 1.17.0

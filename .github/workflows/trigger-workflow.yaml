@@ -1,4 +1,4 @@
-name: Get and pass secrets
+name: Run CI pipeline on push
 
 on:
   push:
@@ -9,6 +9,9 @@ on:
 jobs:
   get-secrets:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: .
     outputs:
       username: ${{ steps.read-secrets.outputs.mail_username }}
       password: ${{ steps.read-secrets.outputs.mail_password }}
@@ -20,26 +23,21 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Unlock secrets with git-crypt
-        if: always()
         uses: sliteteam/github-action-git-crypt-unlock@1.2.0
         env:
           GIT_CRYPT_KEY: ${{ secrets.GIT_CRYPT_KEY }}
 
       - name: Read secrets from secrets.txt
         id: read-secrets
-        if: always()
         run: |
           cat secrets.txt >> "$GITHUB_OUTPUT"
-        working-directory: .
 
-  pass-secrets:
+  build:
     needs: get-secrets
-    uses: ./.github/workflows/ci.yaml
+    uses: ./.github/workflows/build.yaml
     with:
       node_version: 18
       docker_registry: ghcr.io
-      docker_repo: angular-react-starter-image
-      docker_tag: latest
       mail_subject: Github actions job result
     secrets:
       mail_username: ${{ needs.get-secrets.outputs.username }}
